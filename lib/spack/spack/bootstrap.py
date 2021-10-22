@@ -605,9 +605,11 @@ def clingo_root_spec():
     spec_str = 'clingo-bootstrap@spack+python'
 
     # Add a proper compiler hint to the root spec. We use GCC for
-    # everything but MacOS.
+    # everything but MacOS and Windows.
     if str(spack.platforms.host()) == 'darwin':
         spec_str += ' %apple-clang'
+    elif str(spack.platforms.host()) == 'windows':
+        spec_str += ' %msvc'
     else:
         spec_str += ' %gcc'
 
