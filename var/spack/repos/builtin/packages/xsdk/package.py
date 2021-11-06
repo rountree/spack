@@ -5,9 +5,9 @@
 
 
 import sys
+from copy import deepcopy
 
 from spack import *
-from copy import deepcopy
 
 
 def depends_on_accl(accl_name, accl_var, *args, **kwargs):
