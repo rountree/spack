@@ -61,7 +61,7 @@ class Xsdk(BundlePackage, CudaPackage, ROCmPackage):
     homepage = "https://xsdk.info"
     maintainers = ['balay', 'luszczek', 'balos1']
 
-    def xsdk_depends_on(*args, cuda_var='', rocm_var='', **kwargs):
+    def xsdk_depends_on(*args, cuda_var='', rocm_var='', **kwargs):  # novermin
         """
         Wrapper for depends_on which can handle propagating cuda and rocm
         variants.
