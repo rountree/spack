@@ -17,6 +17,12 @@ class Linux(Package):
 
     version('5.15.3', sha256='e2e780e3d75e9d1223c57cd218680c58637a45bc02b1cb02a7174f8a01682180')
 
+    def url_for_version(self, version):
+        if( version.up_to(1) >= Version(3) ):
+            return "https://mirrors.edge.kernel.org/pub/linux/kernel/v{0}.x/linux-{1}.tar.gz".format(version.up_to(1), version)
+        else:
+            return "https://mirrors.edge.kernel.org/pub/linux/kernel/v{0}/linux-{1}.tar.gz".format(version.up_to(2), version)
+
     # FIXME: Add dependencies if required.
     # depends_on('foo')
     def install(self, spec, prefix):
