@@ -23,6 +23,55 @@ class Linux(Package):
 
     # FIXME: Add dependencies if required.
     # depends_on('foo')
+
+    
+
+    # git log --simplify-by-decoration v5.0..v5.16-rc2 -p Documentation/process/changes.rst
+    # 5.16-rc2  Sphinx              1.3     1.7
+    # 5.15-rc2  GNU C               4.9     5.1
+    # 5.13-rc1  oprofile            0.9     removed
+    # 5.10-rc1  Clang/LLVM          n/a     10.0.1
+    # 5.8-rc5   GNU C               4.8     4.9
+    # 5.8-rc1   GNU C               4.6     4.8
+    # 5.7-rc1   binutils            2.21    2.23
+    # 5.3-rc1   isdn4k-utils        3.1pre1 removed
+    # 5.3-rc1   binutils            2.20    2.21
+    # 
+    # git log --simplify-by-decoration v4.0-rc1..v4.20 -p Documentation/process/changes.rst
+    # 4.19-rc1  GNU C               3.2     4.6
+    # 4.19-rc1  module-init-tools   0.9.10  removed
+    # 4.19-rc1  kmod                n/a     13
+    # 4.16-rc1  flex                n/a     2.5.35
+    # 4.16-rc1  bison               n/a     2.0
+    # 4.14-rc1  Sphinx              1.2     1.3
+    # 4.13-rc1  binutils            2.12    2.20
+    # 4.12-rc1  GNU make            3.80    3.81
+    # 4.10-rc1  GNU C               n/a     3.2
+    #  "        GNU make            n/a     3.8
+    #  "        binutils            n/a     2.12
+    #  "        util-linux          n/a     2.10o
+    #  "        module-init-tools   n/a     0.9.10
+    #  "        e2fsprogs           n/a     1.41.4
+    #  "        jfsutil             n/a     1.1.3
+    #  "        reiserfsprogs       n/a     3.6.3
+    #  "        xfsprogs            n/a     2.6.0
+    #  "        squashfs-tools      n/a     4.0
+    #  "        btrfs-progs         n/a     0.18
+    #  "        pcmciautils         n/a     004
+    #  "        quota-tools         n/a     3.09
+    #  "        PPP                 n/a     2.4.0
+    #  "        isdn4k-utils        n/a     3.1pre1
+    #  "        nfs-utils           n/a     1.0.5
+    #  "        procps              n/a     3.2.0
+    #  "        oprofile            n/a     0.9
+    #  "        udev                n/a     081
+    #  "        grub                n/a     0.93
+    #  "        mcelog              n/a     0.6
+    #  "        iptables            n/a     1.4.2
+    #  "        openssl/libcrypto   n/a     1.0.0
+    #  "        bc                  n/a     1.06.95
+    #  "        Sphinx              n/a     1.2
+
     def install(self, spec, prefix):
         if not os.path.isdir(self.stage.source_path):
             return
