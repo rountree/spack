@@ -22,9 +22,11 @@ class Linux(Package):
             return "https://mirrors.edge.kernel.org/pub/linux/kernel/v{0}/linux-{1}.tar.gz".format(version.up_to(2), version)
 
     # Minimum version info manually scraped from the Linux repo.
-    # git log --simplify-by-decoration v4.0-rc1..v5.16-rc2 -p Documentation/process/changes.rst
+    # git log --simplify-by-decoration v4.0-rc1..v5.16-rc2 -p -- Documentation/process/changes.rst
+    # git log --simplify-by-decoration v2.6.11..v4.9 -p -- Documentation/Changes
 
-    # gcc minimum versions.
+    # gcc
+    # Linux     dependence          prev    current min version
     # 5.15-rc2  GNU C               4.9     5.1
     # 5.8-rc5   GNU C               4.8     4.9
     # 5.8-rc1   GNU C               4.6     4.8
@@ -35,13 +37,12 @@ class Linux(Package):
     conflicts('%gcc@:4.5', when='@4.19:')
     conflicts('%gcc@:3.1', when='@4.10:')
 
-    # clang minimum version
+    # clang
     # 5.10-rc1  Clang/LLVM          n/a     10.0.1
     conflicts('%clang@:10.0.0', when='@5.10:')
     conflicts('%clang',         when='@:5.09')
 
-
-    # Sphinx minimum versions
+    # Sphinx
     # 5.16-rc2  Sphinx              1.3     1.7
     # 4.14-rc1  Sphinx              1.2     1.3
     # 4.10-rc1  Sphinx              n/a     1.2
@@ -50,14 +51,14 @@ class Linux(Package):
     conflicts('py-sphinx@:1.2', when='@4.14:')
     conflicts('py-sphinx@:1.1', when='@4.10:')
 
-    # gmake minimum versions
+    # gmake
     # 4.12-rc1  GNU make            3.80    3.81
     # 4.10-rc1  GNU make            n/a     3.8
     depends_on('gmake')
     conflicts('gmake@:3.80', when'@4.12:')
     conflicts('gmake@:3.7',  when'@4.10:')
 
-    # binutils minimum versions
+    # binutils
     # 5.7-rc1   binutils            2.21    2.23
     # 5.3-rc1   binutils            2.20    2.21
     # 4.13-rc1  binutils            2.12    2.20
@@ -67,38 +68,72 @@ class Linux(Package):
     conflicts('binutils@:2.20', when='@5.3:') 
     conflicts('binutils@:2.19', when='@4.13:') 
 
-    # flex minimum version
+    # flex
     # 4.16-rc1  flex                n/a     2.5.35
     depends_on('flex@2.5.35:', when='@4.16:')
 
-    # 5.13-rc1  oprofile            0.9     removed
-    # 5.3-rc1   isdn4k-utils        3.1pre1 removed
-    
-    # git log --simplify-by-decoration v4.0-rc1..v4.20 -p Documentation/process/changes.rst
-    # 4.19-rc1  module-init-tools   0.9.10  removed
-    # 4.19-rc1  kmod                n/a     13
+    # bison
     # 4.16-rc1  bison               n/a     2.0
-    #  "        util-linux          n/a     2.10o
-    #  "        module-init-tools   n/a     0.9.10
-    #  "        e2fsprogs           n/a     1.41.4
-    #  "        jfsutil             n/a     1.1.3
-    #  "        reiserfsprogs       n/a     3.6.3
-    #  "        xfsprogs            n/a     2.6.0
-    #  "        squashfs-tools      n/a     4.0
-    #  "        btrfs-progs         n/a     0.18
-    #  "        pcmciautils         n/a     004
-    #  "        quota-tools         n/a     3.09
-    #  "        PPP                 n/a     2.4.0
-    #  "        isdn4k-utils        n/a     3.1pre1
-    #  "        nfs-utils           n/a     1.0.5
-    #  "        procps              n/a     3.2.0
-    #  "        oprofile            n/a     0.9
-    #  "        udev                n/a     081
-    #  "        grub                n/a     0.93
-    #  "        mcelog              n/a     0.6
-    #  "        iptables            n/a     1.4.2
-    #  "        openssl/libcrypto   n/a     1.0.0
+    depends_on('bison@2.0:', when='@4.16:')
+
+    # kmod
+    # 4.19-rc1  kmod                n/a     13
+    depends_on('kmod@13:')
+
+    # util-linux [note squirrley vesioning]
+    # 4.10-rc1  util-linux          n/a     2.10o
+    depends_on('util-linux@2.10o:')
+
+    # e2fsprogs
+    # 4.10-rc1  e2fsprogs           n/a     1.41.4
+    depends_on('e2fsprogs@1.41.4:')
+
+    # xfsprogs
+    # 4.10-rc1  xfsprogs            n/a     2.6.0
+    depends_on('xfsprogs@2.6.0:')
+
+    # squashfs
+    # 4.10-rc1  squashfs-tools      n/a     4.0
+    depends_on('squashfs@4.0:')
+
+    # nfs-utils
+    # 4.10-rc1  nfs-utils           n/a     1.0.5
+    depends_on('nfs-utils@1.0.5:')
+
+    # procps
+    # 4.10-rc1  procps              n/a     3.2.0
+    depends_on('procps@3.2.0:')
+
+    # bc
     # 4.10-rc1  bc                  n/a     1.06.95
+    depends_on('bc@1.06.95:')
+
+    # openssl/libcrypto
+    # 4.10-rc1  openssl/libcrypto   n/a     1.0.0
+    depends_on('openssl@1.0.0:')
+
+    
+    # Need to verify if these are real dependences.
+    # 4.10-rc1  oprofile            n/a     0.9
+    # 5.13-rc1  oprofile            0.9     removed
+
+    # 5.3-rc1   isdn4k-utils        3.1pre1 removed
+    # 4.10-rc1  isdn4k-utils        n/a     3.1pre1
+
+    # 4.19-rc1  module-init-tools   0.9.10  removed
+    # 4.10-rc1  module-init-tools   n/a     0.9.10
+
+    # No spack package yet
+    # 4.10-rc1  iptables            n/a     1.4.2
+    # 4.10-rc1  mcelog              n/a     0.6
+    # 4.10-rc1  grub                n/a     0.93
+    # 4.10-rc1  udev                n/a     081
+    # 4.10-rc1  jfsutil             n/a     1.1.3
+    # 4.10-rc1  reiserfsprogs       n/a     3.6.3
+    # 4.10-rc1  btrfs-progs         n/a     0.18
+    # 4.10-rc1  pcmciautils         n/a     004
+    # 4.10-rc1  quota-tools         n/a     3.09
+    # 4.10-rc1  PPP                 n/a     2.4.0
 
     def install(self, spec, prefix):
         if not os.path.isdir(self.stage.source_path):
