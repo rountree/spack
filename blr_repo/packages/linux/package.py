@@ -21,34 +21,63 @@ class Linux(Package):
         else:
             return "https://mirrors.edge.kernel.org/pub/linux/kernel/v{0}/linux-{1}.tar.gz".format(version.up_to(2), version)
 
-    # FIXME: Add dependencies if required.
-    # depends_on('foo')
+    # Minimum version info manually scraped from the Linux repo.
+    # git log --simplify-by-decoration v4.0-rc1..v5.16-rc2 -p Documentation/process/changes.rst
 
-    
-
-    # git log --simplify-by-decoration v5.0..v5.16-rc2 -p Documentation/process/changes.rst
-    # 5.16-rc2  Sphinx              1.3     1.7
+    # gcc minimum versions.
     # 5.15-rc2  GNU C               4.9     5.1
-    # 5.13-rc1  oprofile            0.9     removed
-    # 5.10-rc1  Clang/LLVM          n/a     10.0.1
     # 5.8-rc5   GNU C               4.8     4.9
     # 5.8-rc1   GNU C               4.6     4.8
-    # 5.7-rc1   binutils            2.21    2.23
-    # 5.3-rc1   isdn4k-utils        3.1pre1 removed
-    # 5.3-rc1   binutils            2.20    2.21
-    # 
-    # git log --simplify-by-decoration v4.0-rc1..v4.20 -p Documentation/process/changes.rst
     # 4.19-rc1  GNU C               3.2     4.6
+    # 4.10-rc1  GNU C               n/a     3.2
+    conflicts('%gcc@:5.0', when='@5.15:')
+    conflicts('%gcc@:4.8', when='@5.8:')
+    conflicts('%gcc@:4.5', when='@4.19:')
+    conflicts('%gcc@:3.1', when='@4.10:')
+
+    # clang minimum version
+    # 5.10-rc1  Clang/LLVM          n/a     10.0.1
+    conflicts('%clang@:10.0.0', when='@5.10:')
+    conflicts('%clang',         when='@:5.09')
+
+
+    # Sphinx minimum versions
+    # 5.16-rc2  Sphinx              1.3     1.7
+    # 4.14-rc1  Sphinx              1.2     1.3
+    # 4.10-rc1  Sphinx              n/a     1.2
+    depends_on('py-sphinx')
+    conflicts('py-sphinx@:1.6', when='@5.16:')
+    conflicts('py-sphinx@:1.2', when='@4.14:')
+    conflicts('py-sphinx@:1.1', when='@4.10:')
+
+    # gmake minimum versions
+    # 4.12-rc1  GNU make            3.80    3.81
+    # 4.10-rc1  GNU make            n/a     3.8
+    depends_on('gmake')
+    conflicts('gmake@:3.80', when'@4.12:')
+    conflicts('gmake@:3.7',  when'@4.10:')
+
+    # binutils minimum versions
+    # 5.7-rc1   binutils            2.21    2.23
+    # 5.3-rc1   binutils            2.20    2.21
+    # 4.13-rc1  binutils            2.12    2.20
+    # 4.10-rc1  binutils            n/a     2.12
+    depends_on('binutils')
+    conflicts('binutils@:2.22', when='@5.7:') 
+    conflicts('binutils@:2.20', when='@5.3:') 
+    conflicts('binutils@:2.19', when='@4.13:') 
+
+    # flex minimum version
+    # 4.16-rc1  flex                n/a     2.5.35
+    depends_on('flex@2.5.35:', when='@4.16:')
+
+    # 5.13-rc1  oprofile            0.9     removed
+    # 5.3-rc1   isdn4k-utils        3.1pre1 removed
+    
+    # git log --simplify-by-decoration v4.0-rc1..v4.20 -p Documentation/process/changes.rst
     # 4.19-rc1  module-init-tools   0.9.10  removed
     # 4.19-rc1  kmod                n/a     13
-    # 4.16-rc1  flex                n/a     2.5.35
     # 4.16-rc1  bison               n/a     2.0
-    # 4.14-rc1  Sphinx              1.2     1.3
-    # 4.13-rc1  binutils            2.12    2.20
-    # 4.12-rc1  GNU make            3.80    3.81
-    # 4.10-rc1  GNU C               n/a     3.2
-    #  "        GNU make            n/a     3.8
-    #  "        binutils            n/a     2.12
     #  "        util-linux          n/a     2.10o
     #  "        module-init-tools   n/a     0.9.10
     #  "        e2fsprogs           n/a     1.41.4
@@ -69,8 +98,7 @@ class Linux(Package):
     #  "        mcelog              n/a     0.6
     #  "        iptables            n/a     1.4.2
     #  "        openssl/libcrypto   n/a     1.0.0
-    #  "        bc                  n/a     1.06.95
-    #  "        Sphinx              n/a     1.2
+    # 4.10-rc1  bc                  n/a     1.06.95
 
     def install(self, spec, prefix):
         if not os.path.isdir(self.stage.source_path):
