@@ -31,11 +31,12 @@ class Linux(Package):
     # 5.8-rc5   GNU C               4.8     4.9
     # 5.8-rc1   GNU C               4.6     4.8
     # 4.19-rc1  GNU C               3.2     4.6
-    # 4.10-rc1  GNU C               n/a     3.2
+    # 2.6.16-rc1  GNU C               2.95.3  3.2
     conflicts('%gcc@:5.0', when='@5.15:')
     conflicts('%gcc@:4.8', when='@5.8:')
     conflicts('%gcc@:4.5', when='@4.19:')
     conflicts('%gcc@:3.1', when='@4.10:')
+    conflicts('%gcc@:2.95.2', when='@2.6.16')
 
     # clang
     # 5.10-rc1  Clang/LLVM          n/a     10.0.1
@@ -43,20 +44,29 @@ class Linux(Package):
     conflicts('%clang',         when='@:5.09')
 
     # Sphinx
+    # The Changes/changes.rst file gives additional
+    #   guidance for dependences, mentioning 
+    #   Sphinx 1.4.6 as a minimum for pdfs, XeLaTeX
+    #   version 3.14159265 for LaTeX support in 4.9.
+    #   If you plan on building older versions of 
+    #   Linux documentation with contemporary tools
+    #   you'll probably need more than what's here.
     # 5.16-rc2  Sphinx              1.3     1.7
     # 4.14-rc1  Sphinx              1.2     1.3
-    # 4.10-rc1  Sphinx              n/a     1.2
-    depends_on('py-sphinx')
+    # 4.9-rc1   Sphinx              n/a     1.2
+    depends_on('texlive')
+    depends_on('py-sphinx',     when='@4.9:')
     conflicts('py-sphinx@:1.6', when='@5.16:')
     conflicts('py-sphinx@:1.2', when='@4.14:')
-    conflicts('py-sphinx@:1.1', when='@4.10:')
+    conflicts('py-sphinx@:1.1', when='@4.9:')
 
     # gmake
-    # 4.12-rc1  GNU make            3.80    3.81
-    # 4.10-rc1  GNU make            n/a     3.8
+    # 4.12-rc1    GNU make            3.80    3.81
+    # 2.6.31-rc1  GNU make            3.79.1  3.80
+    #
     depends_on('gmake')
     conflicts('gmake@:3.80', when'@4.12:')
-    conflicts('gmake@:3.7',  when'@4.10:')
+    conflicts('gmake@:3.79', when'@2.6.31:')
 
     # binutils
     # 5.7-rc1   binutils            2.21    2.23
@@ -85,7 +95,7 @@ class Linux(Package):
     depends_on('util-linux@2.10o:')
 
     # e2fsprogs
-    # 4.10-rc1  e2fsprogs           n/a     1.41.4
+    # 2.6.29-rc4  e2fsprogs           1.29     1.41.4
     depends_on('e2fsprogs@1.41.4:')
 
     # xfsprogs
@@ -93,7 +103,7 @@ class Linux(Package):
     depends_on('xfsprogs@2.6.0:')
 
     # squashfs
-    # 4.10-rc1  squashfs-tools      n/a     4.0
+    # 2.6.29-rc4  squashfs-tools      n/a     4.0
     depends_on('squashfs@4.0:')
 
     # nfs-utils
@@ -105,11 +115,12 @@ class Linux(Package):
     depends_on('procps@3.2.0:')
 
     # bc
-    # 4.10-rc1  bc                  n/a     1.06.95
+    # 4.4-rc1   bc                  n/a     1.06.95
     depends_on('bc@1.06.95:')
 
     # openssl/libcrypto
-    # 4.10-rc1  openssl/libcrypto   n/a     1.0.0
+    # Not sure why the minimum version was rolled back.
+    # 4.3-rc4  openssl/libcrypto   1.0.1k   1.0.0
     depends_on('openssl@1.0.0:')
 
     
@@ -124,14 +135,17 @@ class Linux(Package):
     # 4.10-rc1  module-init-tools   n/a     0.9.10
 
     # No spack package yet
-    # 4.10-rc1  iptables            n/a     1.4.2
-    # 4.10-rc1  mcelog              n/a     0.6
-    # 4.10-rc1  grub                n/a     0.93
-    # 4.10-rc1  udev                n/a     081
+    # 2.6.35-rc1  iptables          1.4.1    1.4.2
+    # 2.6.33-rc1  iptables          n/a      1.4.1
+    # 2.6.31-rc1  mcelog              n/a     0.6
+    # 2.6.23-rc2  grub                n/a     0.93
+    # 2.6.19-rc1  udev                071     081
+    # 2.6.15-rc1  udev                058     071
+    # 2.6.13-rc4  udev                n/a     058
     # 4.10-rc1  jfsutil             n/a     1.1.3
     # 4.10-rc1  reiserfsprogs       n/a     3.6.3
-    # 4.10-rc1  btrfs-progs         n/a     0.18
-    # 4.10-rc1  pcmciautils         n/a     004
+    # 2.6.29-rc4  btrfs-progs         n/a     0.18
+    # 2.6.13-rc3  pcmciautils         001     004
     # 4.10-rc1  quota-tools         n/a     3.09
     # 4.10-rc1  PPP                 n/a     2.4.0
 
