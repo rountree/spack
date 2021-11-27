@@ -128,3 +128,21 @@ fuzzer_interceptors.o
 Hypothesis:  ld.lld is hard-coded somewhere and is trying to use $PATH to find the binary.
 
 According to the strace files this fault is the first time try and execve into ld.ldd.  No clone or any other exec/fork used either.
+
+Aha!
+lib/cmake/llvm/LLVMExternalProjectUtils.cmake
+172     if(lld IN_LIST TOOLCHAIN_TOOLS)
+173       if(is_msvc_target)
+174         list(APPEND compiler_args -DCMAKE_LINKER=${LLVM_RUNTIME_OUTPUT_INTDIR}/lld-link${CMAKE_EXECUTABLE_SUFFIX})
+175       elseif(NOT _cmake_system_name STREQUAL Darwin)
+176         list(APPEND compiler_args -DCMAKE_LINKER=${LLVM_RUNTIME_OUTPUT_INTDIR}/ld.lld${CMAKE_EXECUTABLE_SUFFIX})
+177       endif()
+
+Nope, that's fine, here's the only time the flag is seen in the build output.
+ -DCMAKE_LINKER=/dev/shm/spack/lib/spack/env/ld.lld 
+
+Installed lld-11 and lld-12 and lld-9.  Neither provides a file named ld.lld.
+Ah, but there is a ld.lld-9, etc. in /usr/bin.
+
+Current hypothesis.  The llvm linker is a seperate project, but there's a hard-coded dependence on it
+in LLVMExternalProjectUtils.  The rest of the code uses the default linker (probably?).  
