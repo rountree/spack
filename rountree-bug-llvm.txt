@@ -105,10 +105,26 @@ lrwxrwxrwx 1 rountree rountree     2 Nov 26 19:26 ld.lld -> cc
 
 ||||| Failed in the same place.  No change in timestamp on ld.lld.
 
-||||| Trying serial build
-rountree@dayafter:/dev/shm/spack$ spack clean llvm@13.0.0
-==> Cleaning build stage [llvm@13.0.0%clang@12.0.0~all_targets~build_llvm_dylib+clang~code_signing+compiler-rt~cuda~flang+gold+internal_unwind~ipo+libcxx~link_llvm_dylib+lld+lldb~mlir+omp_as_runtime~omp_debug~omp_tsan+polly~python~shared_libs~split_dwarf build_type=Release
-version_suffix=none arch=linux-ubuntu21.04-zen2/3bgoj
+||||| Failure reproduced 
+spack install llvm@13.0.0%clang@12.0.0
+spack install llvm@12.0.0%clang@12.0.0
+spack install llvm@12.0.0%clang@11.0.1
 
-/usr/bin/time spack install -j1 llvm@13.0.0%clang@12.0.0
+strace --output=${HOME}/strace --follow-forks --output-separately spack install llvm@13.0.0%clang@12.0.0
 
+Line 3876 of build.txt corresponds to the compile_commands.json file entry.  But it's line 3877 that fails.
+
+This is the command that fails.
+
+/dev/shm/spack/lib/spack/env/ld.lld
+--whole-archive
+/tmp/rountree/spack-stage/spack-stage-llvm-13.0.0-3bgojhfgtoburq6dslpgh5q5gskjzu5q/spack-build-3bgojhf/lib/clang/13.0.0/lib/linux/libclang_rt.fuzzer_interceptors-x86_64.a
+--no-whole-archive
+/tmp/rountree/spack-stage/spack-stage-llvm-13.0.0-3bgojhfgtoburq6dslpgh5q5gskjzu5q/spack-build-3bgojhf/projects/compiler-rt/lib/fuzzer/libcxx_fuzzer_x86_64/lib/libc++.a
+-r
+-o
+fuzzer_interceptors.o
+
+Hypothesis:  ld.lld is hard-coded somewhere and is trying to use $PATH to find the binary.
+
+According to the strace files this fault is the first time try and execve into ld.ldd.  No clone or any other exec/fork used either.
