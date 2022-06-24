@@ -76,4 +76,33 @@ class Tar(AutotoolsPackage, GNUMirrorPackage):
         elif zip == 'pigz':
             gzip_path = self.spec['pigz'].prefix.bin.pigz
         args.append('--with-gzip={}'.format(gzip_path))
+
+        spec=self.spec
+        # Pre-OneAPI Intel compilers search for a local copy of gcc and
+        # degrade their feature set to match what was found.  In the
+        # case where that gcc compiler is version < 5.0, m4@1.4.19 fails
+        # to build.
+        #
+        # Passing in the -no-gcc option works in the following cases.
+        #
+        #       intel@14.0.3    intel@16.0.4
+        #       intel@17.0.2    intel@18.0.2    
+        #
+        # These versions fail:
+        #
+        #       intel@15.0.6
+        #
+        # Passing in -gcc-name=/path/to/preferred/gcc works in this case.
+        # This is not portable and will need to be hardcoded.
+        #       intel@19.1.2.254
+        #
+        # No modifications are necessary for these versions.
+        #       oneapi@2021.2.0 oneapi@2022.1.0
+        #
+        if spec.satisfies('%intel@14:18'):
+            args.append('CFLAGS=-no-gcc')
+        # Uncomment and modify if you are using icc v19 and the default
+        # gcc in your environment is < gcc5.
+        # elif spec.satisfies('%intel@19'):
+        #    args.append('CFLAGS=-gcc-name=/usr/tce/packages/gcc/gcc-10.2.1/bin/gcc')
         return args
