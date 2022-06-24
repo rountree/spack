@@ -38,6 +38,8 @@ class Tar(AutotoolsPackage, GNUMirrorPackage):
     depends_on('xz', type='run')  # for xz/lzma
     depends_on('bzip2', type='run')
 
+    conflicts('%intel@15.0.6',msg="intel@15.0.6 fails due to an undefined max_align_t.")
+
     patch('tar-pgi.patch',    when='@1.29')
     patch('config-pgi.patch', when='@:1.29')
     patch('se-selinux.patch', when='@:1.29')
