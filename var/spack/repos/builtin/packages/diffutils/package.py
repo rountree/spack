@@ -42,3 +42,32 @@ class Diffutils(AutotoolsPackage, GNUMirrorPackage):
         output = Executable(exe)('--version', output=str, error=str)
         match = re.search(r'diff \(GNU diffutils\) (\S+)', output)
         return match.group(1) if match else None
+
+    def configure_args(self):
+        spec = self.spec
+        args = []
+        # Pre-OneAPI Intel compilers search for a local copy of gcc and
+        # degrade their feature set to match what was found.  In the
+        # case where that gcc compiler is version < 5.0, m4@1.4.19 fails
+        # to build.
+        #   
+        # Passing in the -no-gcc option works in the following cases.
+        #   
+        #       intel@14.0.3    intel@15.0.6    intel@16.0.4
+        #       intel@17.0.2    intel@18.0.2    
+        #   
+        # Passing in -gcc-name=/path/to/preferred/gcc works in this case.
+        # This is not portable and will need to be hardcoded.
+        #       intel@19.1.2.254
+        #   
+        # No modifications are necessary for these versions.
+        #       oneapi@2021.2.0 oneapi@2022.1.0
+        #   
+        if spec.satisfies('%intel@14:18'):
+            args.append('CFLAGS=-no-gcc')
+        # Uncomment and modify if you are using icc v19 and the default
+        # gcc in your environment is < gcc5.
+        #elif spec.satisfies('%intel@19'):
+        #    args.append('CFLAGS=-gcc-name=/path/to/your/recent/gcc')
+        return args
+
