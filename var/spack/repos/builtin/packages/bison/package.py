@@ -64,7 +64,9 @@ class Bison(AutotoolsPackage, GNUMirrorPackage):
     patch('nvhpc-3.7.patch', when='@3.7.0:3.7 %nvhpc')
 
     conflicts('%intel@:14', when='@3.4.2:',
-              msg="Intel 14 has immature C11 support")
+            msg="Intel 14 has immature C11 support")
+    conflicts('%intel@19.1.2.254',
+            msg="Perhaps transition issues from icc to OneAPI.")
 
     if sys.platform == 'darwin' and macos_version() >= Version('10.13'):
         patch('secure_snprintf.patch', level=0, when='@3.0.4')
@@ -76,3 +78,30 @@ class Bison(AutotoolsPackage, GNUMirrorPackage):
         output = Executable(exe)('--version', output=str, error=str)
         match = re.search(r'bison \(GNU Bison\)\s+(\S+)', output)
         return match.group(1) if match else None
+
+
+    def configure_args(self):
+        spec = self.spec
+        args = ['']
+        # Pre-OneAPI Intel compilers search for a local copy of gcc and
+        # degrade their feature set to match what was found.  In the
+        # case where that gcc compiler is version < 5.0, m4@1.4.19 fails
+        # to build.
+        #   
+        # Passing in the -no-gcc option works in the following cases.
+        #   
+        #       intel@14.0.3    intel@15.0.6    intel@16.0.4
+        #       intel@17.0.2    intel@18.0.2    
+        #   
+        # 
+        # This version fails regardless of -no-gcc or -gcc-name.
+        #       intel@19.1.2.254
+        #   
+        # No modifications are necessary for these versions.
+        #       oneapi@2021.2.0 oneapi@2022.1.0
+        #   
+
+        if spec.satisfies('%intel@14:18'):
+            args.append('CFLAGS=-no-gcc')
+
+        return args
