@@ -43,5 +43,8 @@ class Coreutils(AutotoolsPackage, GNUMirrorPackage):
                 configure_args.append('--program-prefix=g')
             configure_args.append('--without-gmp')
             configure_args.append('gl_cv_func_ftello_works=yes')
-
+        # Fixes issue caused by Intel icc feature-matching an old gcc in the PATH.
+        # icc 19 and Intel OneAPI compilers work fine here.
+        if spec.satisfies('%intel@14:18'):
+                        configure_args.append('CFLAGS=-no-gcc')
         return configure_args
