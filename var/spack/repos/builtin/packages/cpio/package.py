@@ -42,3 +42,14 @@ class Cpio(AutotoolsPackage, GNUMirrorPackage):
                 flags.append('--rtlib=compiler-rt')
 
         return (flags, None, None)
+
+    def configure_args(self):
+        spec = self.spec
+        args = []
+        # May be required if there exists a sufficiently old version of gcc
+        # in the PATH.  icc looks for gcc and attempt to feature-match.  Forcing
+        # icc to look at a more recent gcc solves the problem, but this is a 
+        # site-specific solution.
+        #if spec.satisfies('%intel@19.1.2.254'):
+        #    args.append('CFLAGS=-gcc-name=/usr/tce/packages/gcc/gcc-10.2.1/bin/gcc')
+        return args
