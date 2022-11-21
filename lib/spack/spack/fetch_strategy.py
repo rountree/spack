@@ -853,7 +853,7 @@ class GitFetchStrategy(VCSFetchStrategy):
             if not debug:
                 clone_args.append("--quiet")
             clone_args.extend([self.url, dest])
-            git(*clone_args)
+            git(*clone_args, stdout=sys.stdout, stderr=sys.stderr)
         elif commit:
             # Need to do a regular clone and check out everything if
             # they asked for a particular commit.
@@ -861,7 +861,7 @@ class GitFetchStrategy(VCSFetchStrategy):
             if not debug:
                 clone_args.insert(1, "--quiet")
             with temp_cwd():
-                git(*clone_args)
+                git(*clone_args, stdout=sys.stdout, stderr=sys.stderr)
                 repo_name = get_single_file(".")
                 if self.stage:
                     self.stage.srcdir = repo_name
@@ -876,7 +876,7 @@ class GitFetchStrategy(VCSFetchStrategy):
                 checkout_args = ["checkout", commit]
                 if not debug:
                     checkout_args.insert(1, "--quiet")
-                git(*checkout_args)
+                git(*checkout_args, stdout=sys.stdout, stderr=sys.stderr)
 
         else:
             # Can be more efficient if not checking out a specific commit.
@@ -909,7 +909,7 @@ class GitFetchStrategy(VCSFetchStrategy):
                     args.extend(["--depth", "1"])
 
                 args.extend([self.url])
-                git(*args)
+                git(*args, stdout=sys.stdout, stderr=sys.stderr)
 
                 repo_name = get_single_file(".")
                 if self.stage:
@@ -930,8 +930,8 @@ class GitFetchStrategy(VCSFetchStrategy):
                         pull_args.insert(1, "--quiet")
                         co_args.insert(1, "--quiet")
 
-                    git(*pull_args, ignore_errors=1)
-                    git(*co_args)
+                    git(*pull_args, ignore_errors=1, stdout=sys.stdout, stderr=sys.stderr)
+                    git(*co_args, stdout=sys.stdout, stderr=sys.stderr)
 
         if self.submodules_delete:
             with working_dir(dest):
@@ -946,10 +946,10 @@ class GitFetchStrategy(VCSFetchStrategy):
         submodules = self.submodules
         if callable(submodules):
             submodules = list(submodules(self.package))
-            git_commands.append(["submodule", "init", "--"] + submodules)
-            git_commands.append(["submodule", "update", "--recursive"])
+            git_commands.append(["--git-dir="+dest+"/.git", "submodule", "init", "--"] + submodules)
+            git_commands.append(["--git-dir="+dest+"/.git", "submodule", "update", "--recursive"])
         elif submodules:
-            git_commands.append(["submodule", "update", "--init", "--recursive"])
+            git_commands.append(["--git-dir="+dest+"/.git", "submodule", "update", "--init", "--recursive"])
 
         if not git_commands:
             return
