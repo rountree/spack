@@ -946,8 +946,8 @@ class GitFetchStrategy(VCSFetchStrategy):
 
         with working_dir(dest):
             for args in git_commands:
-                if not spack.config.get("config:debug"):
-                    args.insert(1, "--quiet")
+                #if not spack.config.get("config:debug"):
+                #    args.insert(1, "--quiet")
                 git(*args)
 
     def archive(self, destination):
